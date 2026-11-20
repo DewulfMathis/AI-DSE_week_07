@@ -109,4 +109,29 @@ public class CsvSmartphoneRepository : ISmartphoneRepository
     {
         throw new NotImplementedException();
     }
+
+    public async Task<bool> UpdatePriceAsync(int id, decimal newPrice, CancellationToken cancellationToken = default)
+    {
+        Smartphone? smartphone = await GetSmartphoneByIdAsync(id, cancellationToken);
+        if (smartphone == null)
+        {
+            return false;
+        }
+
+        smartphone.StartPrice = newPrice;
+        await SaveChangesAsync(cancellationToken); // rewrites the whole file
+        return true;
+    }
+
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        List<Smartphone> smartphones = await GetSmartphonesAsync(cancellationToken);
+        if (smartphones.RemoveAll(s => s.Id == id) == 0)
+        {
+            return false;
+        }
+
+        await SaveChangesAsync(cancellationToken); // rewrites the file without that line
+        return true;
+    }
 }

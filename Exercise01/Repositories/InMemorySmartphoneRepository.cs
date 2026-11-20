@@ -45,4 +45,22 @@ public class InMemorySmartphoneRepository : ISmartphoneRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<bool> UpdatePriceAsync(int id, decimal newPrice, CancellationToken cancellationToken = default)
+    {
+        Smartphone? smartphone = _smartphones.FirstOrDefault(s => s.Id == id);
+        if (smartphone == null)
+        {
+            return Task.FromResult(false);
+        }
+
+        smartphone.StartPrice = newPrice;
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        // RemoveAll returns how many items it removed: 0 means the id did not exist.
+        return Task.FromResult(_smartphones.RemoveAll(s => s.Id == id) > 0);
+    }
 }

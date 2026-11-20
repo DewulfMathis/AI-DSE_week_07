@@ -15,9 +15,12 @@ builder.Services.AddSingleton(new MySqlDataSource(connectionString));
 // DEPENDENCY INJECTION
 
 // Repositories: ze delen allen de ISmartphoneRepository, je kan dus makkelijk wisselen.
-builder.Services.AddSingleton<ISmartphoneRepository>(_ => new CsvSmartphoneRepository("Data/smartphones.csv"));
+// builder.Services.AddSingleton<ISmartphoneRepository>(_ => new CsvSmartphoneRepository("Data/smartphones.csv"));
 // builder.Services.AddSingleton<ISmartphoneRepository>(_ => new InMemorySmartphoneRepository());
-builder.Services.AddSingleton<MySqlSmartphoneRepository>();
+builder.Services.AddSingleton<ISmartphoneRepository, MySqlSmartphoneRepository>();
+
+// De CSV blijft de bron voor de import (keuze 2).
+builder.Services.AddSingleton(_ => new CsvSmartphoneRepository("Data/smartphones.csv"));
 
 // Services
 builder.Services.AddSingleton<SmartphoneService>();

@@ -3,12 +3,12 @@ namespace Exercise01.Services;
 public class SmartphoneService
 {
     private readonly ISmartphoneRepository _repository;
-    private readonly MySqlSmartphoneRepository _mySqlSmartphoneRepository;
+    private readonly CsvSmartphoneRepository _csvRepository; // only the source for the import
 
-    public SmartphoneService(ISmartphoneRepository repository, MySqlSmartphoneRepository mySqlSmartphoneRepository)
+    public SmartphoneService(ISmartphoneRepository repository, CsvSmartphoneRepository csvRepository)
     {
         _repository = repository;
-        _mySqlSmartphoneRepository = mySqlSmartphoneRepository;
+        _csvRepository = csvRepository;
     }
 
     public async Task<List<Smartphone>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -26,12 +26,12 @@ public class SmartphoneService
         return _repository.GetSmartphoneByIdAsync(id, cancellationToken);
     }
 
-    // Reads the smartphones from the CSV repository and imports them into MySQL.
+    // Reads the smartphones from the CSV file and imports them into the repository (MySQL).
     // Copies are passed on: the MySQL import sets Id to the id MySQL chooses, and that must not
     // change the objects cached by the CSV repository.
     public async Task ImportSmartphones(CancellationToken cancellationToken = default)
     {
-        List<Smartphone> smartphones = await _repository.GetSmartphonesAsync(cancellationToken);
+        List<Smartphone> smartphones = await _csvRepository.GetSmartphonesAsync(cancellationToken);
         List<Smartphone> copies = smartphones
             .Select(s => new Smartphone
             {
@@ -43,7 +43,7 @@ public class SmartphoneService
             })
             .ToList();
 
-        await _mySqlSmartphoneRepository.ImportSmartphones(copies, cancellationToken);
+        await _repository.ImportSmartphones(copies, cancellationToken);
     }
 
     // Searches brand and type at the same time, case-insensitive, on a part of the text.
@@ -75,6 +75,21 @@ public class SmartphoneService
         _repository.AddSmartphone(smartphone);
         await _repository.SaveChangesAsync(cancellationToken);
         return smartphone;
+    }
+
+    // Same price rule as Validate. Returns false when there is no smartphone with that id.
+    public Task<bool> UpdatePriceAsync(int id, decimal newPrice, CancellationToken cancellationToken = default)
+    {
+        if (newPrice <= 0)
+            throw new ArgumentOutOfRangeException(nameof(newPrice), "The start price must be positive.");
+
+        return _repository.UpdatePriceAsync(id, newPrice, cancellationToken);
+    }
+
+    // Returns false when there is no smartphone with that id.
+    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return _repository.DeleteAsync(id, cancellationToken);
     }
 
     // ---- Exercise 2: LINQ instead of a foreach loop. The answer on smartphones.csv is next to each query.

@@ -12,4 +12,10 @@ public interface ISmartphoneRepository
 
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
     Task ImportSmartphones(List<Smartphone> smartphones, CancellationToken cancellationToken = default);
+
+    // Changes only the start price. Returns false when there is no smartphone with that id.
+    Task<bool> UpdatePriceAsync(int id, decimal newPrice, CancellationToken cancellationToken = default);
+
+    // Removes the smartphone. Returns false when there is no smartphone with that id.
+    Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
 }
