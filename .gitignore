@@ -1,6 +1,28 @@
+# Build output
 bin/
 obj/
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+*.log
+
+# IDEs / editors
 .vs/
+.vscode/
+.idea/
 *.user
+*.suo
+*.swp
+
+# OS files
 .DS_Store
+Thumbs.db
+desktop.ini
 __MACOSX/
+
+# Local secrets (connection strings)
+appsettings.local.json
+appsettings.*.local.json
+secrets.json
+.env
+.env.*

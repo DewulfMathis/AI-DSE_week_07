@@ -1,5 +1,3 @@
-using Exercise01.Models;
-
 namespace Exercise01.Repositories;
 
 // The interface is asynchronous even though this implementation never waits, because the interface
@@ -36,5 +34,15 @@ public class InMemorySmartphoneRepository : ISmartphoneRepository
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
+    }
+
+    public Task ImportSmartphones()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ImportSmartphones(List<Smartphone> smartphones, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }

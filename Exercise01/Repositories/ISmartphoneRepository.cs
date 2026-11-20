@@ -1,5 +1,3 @@
-using Exercise01.Models;
-
 namespace Exercise01.Repositories;
 
 public interface ISmartphoneRepository
@@ -13,4 +11,5 @@ public interface ISmartphoneRepository
     void AddSmartphone(Smartphone smartphone);
 
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task ImportSmartphones(List<Smartphone> smartphones, CancellationToken cancellationToken = default);
 }

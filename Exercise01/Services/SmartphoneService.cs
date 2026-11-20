@@ -1,15 +1,14 @@
-using Exercise01.Models;
-using Exercise01.Repositories;
-
 namespace Exercise01.Services;
 
 public class SmartphoneService
 {
     private readonly ISmartphoneRepository _repository;
+    private readonly MySqlSmartphoneRepository _mySqlSmartphoneRepository;
 
-    public SmartphoneService(ISmartphoneRepository repository)
+    public SmartphoneService(ISmartphoneRepository repository, MySqlSmartphoneRepository mySqlSmartphoneRepository)
     {
         _repository = repository;
+        _mySqlSmartphoneRepository = mySqlSmartphoneRepository;
     }
 
     public async Task<List<Smartphone>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -25,6 +24,26 @@ public class SmartphoneService
     public Task<Smartphone?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return _repository.GetSmartphoneByIdAsync(id, cancellationToken);
+    }
+
+    // Reads the smartphones from the CSV repository and imports them into MySQL.
+    // Copies are passed on: the MySQL import sets Id to the id MySQL chooses, and that must not
+    // change the objects cached by the CSV repository.
+    public async Task ImportSmartphones(CancellationToken cancellationToken = default)
+    {
+        List<Smartphone> smartphones = await _repository.GetSmartphonesAsync(cancellationToken);
+        List<Smartphone> copies = smartphones
+            .Select(s => new Smartphone
+            {
+                Brand = s.Brand,
+                Type = s.Type,
+                ReleaseYear = s.ReleaseYear,
+                StartPrice = s.StartPrice,
+                OperatingSystem = s.OperatingSystem
+            })
+            .ToList();
+
+        await _mySqlSmartphoneRepository.ImportSmartphones(copies, cancellationToken);
     }
 
     // Searches brand and type at the same time, case-insensitive, on a part of the text.

@@ -1,6 +1,3 @@
-using System.Globalization;
-using Exercise01.Models;
-
 namespace Exercise01.Repositories;
 
 public class CsvSmartphoneRepository : ISmartphoneRepository
@@ -101,5 +98,15 @@ public class CsvSmartphoneRepository : ISmartphoneRepository
             StartPrice = startPrice,
             OperatingSystem = parts[5].Trim()
         };
+    }
+
+    public Task ImportSmartphones()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ImportSmartphones(List<Smartphone> smartphones, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }
